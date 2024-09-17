@@ -5,6 +5,13 @@ A tool that check whether if contributor changed his name
 
 - You should set the GitHub token by the `-token` flag. See [Github API](https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-repository-contributors) for detail.
 
+## Features
+
+- [x] Support scanning multiple GitHub repositories
+- [X] Support HTTP proxy settings
+- [X] Support scanning frequency control
+- [ ] Support exporting to file
+
 ## QuickStart
 
 ```shell
