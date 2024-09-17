@@ -11,6 +11,7 @@ A tool that check whether if contributor changed his name
 - [X] Support HTTP proxy settings
 - [X] Support scanning frequency control
 - [ ] Support exporting to file
+- [ ] Support multiple condition filters
 
 ## QuickStart
 
