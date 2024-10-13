@@ -16,6 +16,8 @@ A tool that check whether if contributor changed his name
 ## QuickStart
 
 ```shell
+go mod init
+go mod tidy
 go run .
 ```
 
