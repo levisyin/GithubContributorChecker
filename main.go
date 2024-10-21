@@ -14,7 +14,7 @@ import (
 
 var (
 	proxy    = flag.String("proxy", "", "proxy setting")
-	repos    = flag.String("repo", "levisyin/GithubContributorChecker", "checking repos, split using comma")
+	repos    = flag.String("repo", "golang/go", "checking repos, split using a comma")
 	interval = flag.Int64("interval", 1000, "unit ms")
 	anon     = flag.Bool("anon", false, "include anonymous contributors in results or not")
 	token    = flag.String("token", "", "github token, couldn't be empty")
@@ -28,9 +28,9 @@ func main() {
 	repositories := strings.Split(*repos, ",")
 	httpCli := http.DefaultClient
 	if *proxy != "" {
-		var proxyUrl *url.URL
-		proxyUrl, _ = url.Parse(*proxy)
-		httpCli = &http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}}
+		var proxyURL *url.URL
+		proxyURL, _ = url.Parse(*proxy)
+		httpCli = &http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyURL)}}
 	}
 	githubCli := github.NewClient(httpCli).WithAuthToken(*token)
 	for _, repository := range repositories {
