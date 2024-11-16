@@ -22,9 +22,9 @@ var (
 
 func main() {
 	flag.Parse()
-  if *token == "" {
-    panic("github token shouln't be empty")
-  }
+        if *token == "" {
+                panic("github token shouln't be empty")
+        }
 	repositories := strings.Split(*repos, ",")
 	httpCli := http.DefaultClient
 	if *proxy != "" {
