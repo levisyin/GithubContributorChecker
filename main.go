@@ -23,7 +23,7 @@ var (
 func main() {
 	flag.Parse()
         if *token == "" {
-                panic("github token shouln't be empty")
+                panic("the github token shouln't be empty, please go to https://github.com/settings/tokens?type=beta to generate one")
         }
 	repositories := strings.Split(*repos, ",")
 	httpCli := http.DefaultClient
