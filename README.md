@@ -10,6 +10,7 @@ A tool that check whether if contributor changed his name
 - [x] Support scanning multiple GitHub repositories
 - [X] Support HTTP proxy settings
 - [X] Support scanning frequency control
+- [X] Support reading data from local cache
 - [ ] Support exporting to file
 - [ ] Support multiple condition filters
 
