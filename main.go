@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -23,6 +24,7 @@ var (
 	anon     = flag.Bool("anon", false, "include anonymous contributors in results or not")
 	token    = flag.String("token", "", "github token")
 	useCache = flag.Bool("useCache", false, "whether to use local cache")
+	debug    = flag.Bool("debug", false, "whether to print debug log")
 )
 
 func main() {
@@ -35,12 +37,13 @@ func main() {
 		httpCli = &http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}}
 	}
 	githubCli := github.NewClient(httpCli).WithAuthToken(*token)
+	fmt.Println("gonna check repos:", repositories)
 	for _, repository := range repositories {
 		splitAry := strings.Split(repository, "/")
 		owner := splitAry[0]
 		repo := splitAry[1]
 		contributors := make([]*github.Contributor, 0)
-		if *useCache {
+		if *useCache && localCacheExists(owner, repo) {
 			slog.With("owner", owner, "repo", repo).Info("using local cache data")
 			err := loadLocalCache(owner, repo, &contributors)
 			if err != nil {
@@ -72,7 +75,6 @@ func main() {
 				time.Sleep(time.Duration(*interval) * time.Millisecond)
 			}
 			fmt.Printf("Found %d contributors in repo %s\n", len(contributors), repository)
-			// 写入本地缓存
 			storeToLocal(owner, repo, contributors)
 		}
 
@@ -114,7 +116,6 @@ func loadLocalCache(owner, repo string, recv any) error {
 	}
 	defer file.Close()
 
-	// 读取文件内容
 	byteValue, err := io.ReadAll(file)
 	if err != nil {
 		slog.With("err", err, "owner", owner, "repo", repo).Error("io read error")
@@ -128,7 +129,6 @@ func loadLocalCache(owner, repo string, recv any) error {
 }
 
 func storeToLocal(owner, repo string, data any) error {
-	// 打开一个文件用于写入
 	file, err := os.Create(getLocalCacheFile(owner, repo))
 	if err != nil {
 		slog.With("err", err, "owner", owner, "repo", repo).Error("create file error")
@@ -136,14 +136,30 @@ func storeToLocal(owner, repo string, data any) error {
 	}
 	defer file.Close()
 
-	// 创建一个 JSON 编码器
 	encoder := json.NewEncoder(file)
 
-	// 将结构体数组编码为 JSON 并写入文件
 	if err := encoder.Encode(data); err != nil {
 		slog.With("err", err, "owner", owner, "repo", repo).Error("encode data to file error")
 		return err
 	}
 	slog.With("owner", owner, "repo", repo).Info("store local cache success")
 	return nil
+}
+
+// localCacheExists check if local cache exists
+func localCacheExists(owner, repo string) bool {
+	_, err := os.Stat(getLocalCacheFile(owner, repo))
+	return !errors.Is(err, os.ErrNotExist)
+}
+
+func initLog() {
+	defaultLevel := slog.LevelInfo
+	if *debug {
+		defaultLevel = slog.LevelDebug
+	}
+	slog.SetLogLoggerLevel(defaultLevel)
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		Level: defaultLevel,
+	}))
+	slog.SetDefault(logger)
 }
