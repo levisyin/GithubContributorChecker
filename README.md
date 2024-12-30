@@ -1,5 +1,5 @@
 # GithubContributorChecker
-A tool that check whether if contributor changed his name 
+A tool that checks the contributors of given repositories
 
 ## Requirements
 
